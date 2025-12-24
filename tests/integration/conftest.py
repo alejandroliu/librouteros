@@ -172,7 +172,7 @@ def routeros_api_ssl_ssh(request, routeros_vm):
     params = routeros_vm("sync")
     params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
     params["ssl_wrapper"] = ctx.wrap_socket
-    params["port"] = params['port'] + 1
+    params["port"] = params["port"] + 1
 
     api = connect(**params)
     return api
