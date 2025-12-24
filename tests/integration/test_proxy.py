@@ -57,4 +57,3 @@ async def test_proxy_ssh_async(routeros_api_async_ssh):
     async for item in identity:
         idents.append(item)
     assert len(idents[0]["name"]) > 0
-
