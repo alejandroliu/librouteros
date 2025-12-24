@@ -44,6 +44,9 @@ ROUTEROS_VMS = {
 # Routeros vms which differ in login methods.
 ROUTEROS_LOGIN_VMS = ("7.18.2", "6.33.3")
 
+# Proxy command strings
+PROXY_NETCAT = "nc -N %h %p"
+PROXY_SSH = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
 
 def setup_qemu_disk(version):
     """Create a temporary disk image backed by original one."""
@@ -135,7 +138,7 @@ def routeros_api_sync(request, routeros_vm):
 @pytest.fixture()
 def routeros_api_sync_netcat(request, routeros_vm):
     params = routeros_vm("sync")
-    params["proxy_command"] = "nc -N 0 %h %p"
+    params["proxy_command"] = PROXY_NETCAT
     api = connect(**params)
     return api
 
@@ -143,7 +146,7 @@ def routeros_api_sync_netcat(request, routeros_vm):
 @pytest.fixture()
 def routeros_api_sync_ssh(request, routeros_vm):
     params = routeros_vm("sync")
-    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    params["proxy_command"] = PROXY_SSH
     api = connect(**params)
     return api
 
@@ -155,7 +158,7 @@ def routeros_api_ssl_netcat(request, routeros_vm):
     ctx.set_ciphers("ADH:@SECLEVEL=0")
 
     params = routeros_vm("sync")
-    params["proxy_command"] = "nc -N %h %p"
+    params["proxy_command"] = PROXY_NETCAT
     params["ssl_wrapper"] = ctx.wrap_socket
     params["port"] = params["port"] + 1
 
@@ -170,7 +173,7 @@ def routeros_api_ssl_ssh(request, routeros_vm):
     ctx.set_ciphers("ADH:@SECLEVEL=0")
 
     params = routeros_vm("sync")
-    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    params["proxy_command"] = PROXY_SSH
     params["ssl_wrapper"] = ctx.wrap_socket
     params["port"] = params["port"] + 1
 
@@ -190,7 +193,7 @@ async def routeros_api_async(request, routeros_vm):
 @pytest_asyncio.fixture()
 async def routeros_api_async_netcat(request, routeros_vm):
     params = routeros_vm("async")
-    params["proxy_command"] = "nc -N %h %p"
+    params["proxy_command"] = PROXY_NETCAT
     api = await async_connect(**params)
     return api
 
@@ -198,6 +201,6 @@ async def routeros_api_async_netcat(request, routeros_vm):
 @pytest_asyncio.fixture()
 async def routeros_api_async_ssh(request, routeros_vm):
     params = routeros_vm("async")
-    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    params["proxy_command"] = PROXY_SSH
     api = await async_connect(**params)
     return api
