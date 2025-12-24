@@ -1,6 +1,5 @@
 import socket
 import ssl
-import time
 from os import (
     devnull,
 )

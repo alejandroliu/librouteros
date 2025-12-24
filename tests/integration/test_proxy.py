@@ -1,6 +1,5 @@
 import pytest
 
-from librouteros.query import Key
 
 def test_proxy_netcat(routeros_api_sync_netcat):
     api = routeros_api_sync_netcat

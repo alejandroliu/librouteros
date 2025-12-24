@@ -202,7 +202,7 @@ async def test_async_create_transport_handles_proxy_command(conn_mock):
     params['proxy_command'] = 'sleep 60'
     conn_mock.return_value = (Mock(), Mock())
     await async_create_transport(host="127.0.0.1", **params)
-    args, kwargs = conn_mock.call_args
+    _, kwargs = conn_mock.call_args
     assert isinstance(kwargs["sock"], socket.socket)
 
 
