@@ -48,6 +48,7 @@ ROUTEROS_LOGIN_VMS = ("7.18.2", "6.33.3")
 PROXY_NETCAT = "nc -N %h %p"
 PROXY_SSH = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
 
+
 def setup_qemu_disk(version):
     """Create a temporary disk image backed by original one."""
     img = NamedTemporaryFile()
