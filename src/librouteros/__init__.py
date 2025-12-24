@@ -128,11 +128,11 @@ def proxy_connect(hostport: tuple[str, int], proxy_cmd: str) -> socket.socket:
             os.execvp(cmdline[0], cmdline)  # noqa: S606
             exit(-1)  # Abort if we reach here!
         else:
-            os._exit(0) # Exit like this because we do not need any clean-ups!
+            os._exit(0)  # Exit like this because we do not need any clean-ups!
 
     # Close our copies of s1; keep s2 for communication
     s1.close()
-    os.waitpid(pid, 0) # Make sure we leave no zombies around...
+    os.waitpid(pid, 0)  # Make sure we leave no zombies around...
 
     return s2
 
@@ -177,4 +177,3 @@ async def async_create_transport(host: str, **kwargs) -> AsyncSocketTransport:
             timeout=kwargs["timeout"],
         )
         return AsyncSocketTransport(reader=reader, writer=writer)
-
