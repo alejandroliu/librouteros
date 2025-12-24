@@ -135,7 +135,7 @@ def routeros_api_sync(request, routeros_vm):
 @pytest.fixture()
 def routeros_api_sync_netcat(request, routeros_vm):
     params = routeros_vm("sync")
-    params["proxy_command"] = "nc -c %h %p"
+    params["proxy_command"] = "nc -N 0 %h %p"
     api = connect(**params)
     return api
 
@@ -155,7 +155,7 @@ def routeros_api_ssl_netcat(request, routeros_vm):
     ctx.set_ciphers("ADH:@SECLEVEL=0")
 
     params = routeros_vm("sync")
-    params["proxy_command"] = "nc -c %h %p"
+    params["proxy_command"] = "nc -N %h %p"
     params["ssl_wrapper"] = ctx.wrap_socket
     params["port"] = params["port"] + 1
 
@@ -190,7 +190,7 @@ async def routeros_api_async(request, routeros_vm):
 @pytest_asyncio.fixture()
 async def routeros_api_async_netcat(request, routeros_vm):
     params = routeros_vm("async")
-    params["proxy_command"] = "nc -c %h %p"
+    params["proxy_command"] = "nc -N %h %p"
     api = await async_connect(**params)
     return api
 
