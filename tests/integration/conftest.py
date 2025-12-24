@@ -1,4 +1,6 @@
 import socket
+import ssl
+import time
 from os import (
     devnull,
 )
@@ -75,7 +77,7 @@ def setup_qemu_vm(disk_image):
         "-hda",
         disk_image.name,
         "-net",
-        "user,hostfwd=tcp::{}-:8728".format(port),
+        "user,hostfwd=tcp::{}-:8728,hostfwd=tcp::{}-:8729".format(port,port+1),
         "-net",
         "nic,model=virtio",
         "-cpu",
@@ -130,6 +132,47 @@ def routeros_api_sync(request, routeros_vm):
         pytest.skip(f"Skipped due to {e}")
     return api
 
+@pytest.fixture()
+def routeros_api_sync_netcat(request, routeros_vm):
+    params = routeros_vm("sync")
+    params["proxy_command"] = "nc -c %h %p"
+    api = connect(**params)
+    return api
+
+@pytest.fixture()
+def routeros_api_sync_ssh(request, routeros_vm):
+    params = routeros_vm("sync")
+    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    api = connect(**params)
+    return api
+
+@pytest.fixture()
+def routeros_api_ssl_netcat(request, routeros_vm):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.set_ciphers('ADH:@SECLEVEL=0')
+
+    params = routeros_vm("sync")
+    params["proxy_command"] = "nc -c %h %p"
+    params['ssl_wrapper'] = ctx.wrap_socket
+    params['port'] = params['port']+1
+
+    api = connect(**params)
+    return api
+
+@pytest.fixture()
+def routeros_api_ssl_ssh(request, routeros_vm):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.set_ciphers('ADH:@SECLEVEL=0')
+
+    params = routeros_vm("sync")
+    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    params['ssl_wrapper'] = ctx.wrap_socket
+    params['port'] = params['port']+1
+
+    api = connect(**params)
+    return api
 
 @pytest_asyncio.fixture()
 async def routeros_api_async(request, routeros_vm):
@@ -137,4 +180,18 @@ async def routeros_api_async(request, routeros_vm):
         api = await async_connect(**routeros_vm("async"))
     except ConnectionResetError as e:
         pytest.skip(f"Skipped due to {e}")
+    return api
+
+@pytest_asyncio.fixture()
+async def routeros_api_async_netcat(request, routeros_vm):
+    params = routeros_vm("async")
+    params["proxy_command"] = "nc -c %h %p"
+    api = await async_connect(**params)
+    return api
+
+@pytest_asyncio.fixture()
+async def routeros_api_async_ssh(request, routeros_vm):
+    params = routeros_vm("async")
+    params["proxy_command"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -W  %h:%p localhost"
+    api = await async_connect(**params)
     return api
